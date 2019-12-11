@@ -1,0 +1,89 @@
+\documentclass{article}
+
+\usepackage{ amsmath }
+\usepackage{ amssymb }
+
+\newcommand\algRel{$\Rightarrow$}
+\newcommand\fresh[2]{#1 \# #2}
+\newcommand\eqa[2]{#1 \cong #2 }
+\newcommand\abs[2]{[ #1] #2}
+
+
+\newcommand\LHS{\textrm{LHS}}
+\newcommand\RHS{\textrm{RHS}}
+
+\newcommand{\doubl}[1]
+           {\left\lVert#1\right\rVert}
+           \newcommand{\simpl}[1]
+                      {\left|#1\right|}
+
+\begin{document}
+
+\section*{Excercise 3}
+
+This is a nontrivial proof of temination since the (\algRel) relation
+is not defined inductively. {TODO: REF PAPERS }
+
+A common tool for proving the termination of programs (or, of course
+rewriting systems) is to find an strictly decreasing termination
+function that maps the state of the program into some
+\emph{well-founded} set. For this excercise we use multiset orderings.
+A nice introductory paper like \cite{DBLP:conf/icalp/DershowitzM79}.
+
+The idea is that given a base order ($\prec$) over a set $A$, we
+define an order $\prec_{\mathscr{P}}$ over finite multisets of $A$
+where $A \prec_{\mathscr{P}} B$ if and only if we can get $A$ from $B$
+substituting zero or more elements, each by a finite set of smaller
+elements (according to $\prec$).  It is well known, and easy to prove
+(details in \cite{DBLP:conf/icalp/DershowitzM79}) that
+($\prec_{\mathscr{P}}$) is a well-founded order whenever ($\prec$) is
+a well-founded order.
+
+For the (\algRel) relation we have a total of 12 rules (six rewriting
+freshness relations, as many rewriting $\alpha$equivalence
+predicates). Lets name them as: \hfill\break $\#_1, \#_2, \#_3, \#_4,
+\#_5, \#_6,\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5,
+\alpha_6$. When a rule is of the form $Pr \Rightarrow Pr'$ we refer
+$Pr$ and $Pr'$ as LHS and RHS.
+
+If we define some notion of size ($sz$) for $\fresh{a}{t}$ and
+$\eqa{t}{u}$ and then:
+
+$$size(Pr) = \bigcup_{p \in Pr} sz(p) $$
+
+\noindent
+It is clear that for $\#1$, $\#5$, and $\alpha_1$, $size$ is
+decreasing from LHS to RHS since $size (\LHS) \subset size(\RHS)$, and
+if $A \subseteq B$ then $A \prec_{\mathsc{P}} B$ in the multiset
+ordering.
+
+For most of the other rules $size$ is also decreasing if $sz$ is
+monotone with respect to the structure of the terms used in the
+predicates. But note that ($\#_6$) requires $sz(\fresh{a}{\pi \cdot
+  X}) > sz(\fresh{a}{id \cdot X})$ (when $\pi \neq id$) and in the
+other hand ($\alpha_5$) introduces a permutation, generating possibly
+many suspentions, which means that it is not clear that
+$size(\eqa{\abs{b}{l}}{\abs{a}{s}}) > size(\eqa{(a \: b) \cdot
+  l}{s})$. Also, rules ($\alpha_5$) and ($\alpha_6$) suggest that it
+is a good idea to consider equivalence conditions ``bigger'' than
+freshness conditions.
+
+Taking all this into account, the following $sz$ function is
+proposed:
+
+\begin{align*}
+  sz(\fresh{a}{t}) &= (1, \doubl{t})\\
+  sz(\eqa{t}{u}) &= (2, \simpl{\eqa{t}{u}})
+\end{align*}
+
+where:
+
+\begin{align*}
+  
+\end{align*}
+
+
+\bibliographystyle{alpha}
+\bibliography{bib}
+
+\end{document}
