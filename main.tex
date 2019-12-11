@@ -4,9 +4,46 @@
 \usepackage{ amssymb }
 
 \newcommand\algRel{$\Rightarrow$}
-\newcommand\fresh[2]{#1 \# #2}
-\newcommand\eqa[2]{#1 \cong #2 }
-\newcommand\abs[2]{[ #1] #2}
+\usepackage{ bussproofs }
+\usepackage{ multicol }
+\usepackage{ enumitem }
+
+\newcommand\fresh[2]{
+  \relax
+  \ifmmode
+      {#1 \# #2}
+  \else
+      {$#1 \# #2$}
+  \fi}
+\newcommand\eqa[2]{
+  \relax
+  \ifmmode
+      {#1 \approx_{\alpha} #2}
+  \else
+      $#1 \approx_{\alpha} #2$
+  \fi}
+
+%time to do it the right way
+
+\newcommand\mathize[1]{
+  \relax
+  \ifmmode
+      {#1}
+  \else
+      {$#1$}
+  \fi}
+
+\newcommand\Ax{\AxiomC}
+\newcommand\Bin{\BinaryInfC}
+\newcommand\Una{\UnaryInfC}
+
+\newcommand\RL{\RightLabel}
+
+\newcommand\abs[2]{\mathize{[#1] #2}}
+\newcommand\lam[2]{\lambda\abs{#1}{#2}}
+
+\newcommand\labstw{\RL{abs2}}
+\newcommand\lfsym{\RL{func sym}}
 
 
 \newcommand\LHS{\textrm{LHS}}
@@ -18,6 +55,90 @@
                       {\left|#1\right|}
 
 \begin{document}
+
+\EnableBpAbbreviations
+
+
+
+\section*{Problem 1}
+
+\begin{multicols*}{2}
+\subsection*{a)}
+
+ \begin{prooftree}
+  \AXC{\fresh{x}{y}}
+  \AXC{\eqa{x}{x}}
+  \UIC{\eqa{x}{(x \: y) \cdot y}}
+  \BIC{\eqa{\abs{x}{x}}{\abs{y}{y}}}
+  \UIC{\eqa{\lam{x}{x}}
+          {\lam{y}{y}}}
+\end{prooftree}
+
+\subsection*{b)}
+
+\begin{prooftree}
+  \AXC{}
+  \UIC{\fresh{x}{\abs{x}{y}}}
+  \UIC{\fresh{x}{\lam{x}{y}}}
+  \AXC{$\cdots$}
+  \UIC{\eqa{{\lam{y}{x}}}{{\lam{y}{x}}}}
+  \RightLabel{$\equiv$}
+  \UIC{\eqa{{\lam{y}{x}}}{(x\: y) \cdot {\lam{x}{y}}}}
+  \labstw
+  \BIC{\eqa{\abs{x}{\lam{y}{x}}}{\abs{y}{\lam{x}{y}}}}
+  \lfsym
+  \UIC{\eqa{\lam{x}{\lam{y}{x}}}{\lam{y}{\lam{x}{y}}}}
+\end{prooftree}
+
+The incomplete branch here is trivial since both terms are sintactical
+equivalent. They can be decomposed constructor by constructor. Note
+that in the $\equiv$ ``rule'' there is no actual rule applied. A
+permutation applied to a ground term is actually sintactically equal
+to the result, there is no suspention here. We adopt this syntax to
+make the applied permutation explicit, for clarity.
+
+\subsection*{c)}
+\subsection*{d)}
+
+\begin{prooftree}
+  \AXC{?}
+  \UIC{\fresh{x}{Y}}
+  \AXC{?}
+  \UIC{\eqa{X}{(x\: y) \cdot Y}}
+  \BIC{\eqa{\abs{x}{X}}{\abs{y}{Y}}}
+  \UIC{\eqa{\lam{x}{X}}{\lam{y}{Y}}}
+\end{prooftree}
+
+\subsection*{e)}
+
+\begin{prooftree}
+  \AXC{\fresh{x}{X}}
+  \AXC{\fresh{x}{X}}
+  \AXC{?}
+  \UIC{\fresh{y}{X}}
+  \BIC{\eqa{X}{(x\: y) \cdot X}}
+  \BIC{\eqa{\abs{x}{X}}{\abs{y}{X}}}
+  \UIC{\eqa{\lam{x}{X}}{\lam{y}{X}}}
+\end{prooftree}
+
+\subsection*{f)}
+\begin{prooftree}
+  \AXC{\fresh{x}{s(X)}}
+  \AXC{\fresh{x}{X}}
+  \AXC{}
+  \UIC{\fresh{y}{X}}
+  \BIC{\eqa{X}{(x\: y) \cdot X}}
+  \UIC{\eqa{s(X)}{s((x\: y) \cdot X)}}
+  \UIC{\eqa{s(X)}{(x\: y) \cdot s(X)}}
+  \BIC{\eqa{\abs{x}{s(X)}}{\abs{y}{s(X)}}}
+  \UIC{\eqa{\lam{x}{s(X)}}{\lam{y}{s(X)}}}
+\end{prooftree}
+
+
+\end{multicols*}
+
+
+\newpage
 
 \section*{Excercise 3}
 
