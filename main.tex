@@ -2,12 +2,17 @@
 
 \usepackage{ amsmath }
 \usepackage{ amssymb }
-
-\newcommand\algRel{$\Rightarrow$}
 \usepackage{ bussproofs }
 \usepackage{ multicol }
 \usepackage{ enumitem }
+\usepackage{ mathrsfs }
+\usepackage[a4paper,margin=1in]{ geometry }
 
+\newcommand\algRel{$\Rightarrow$}
+
+\author{Juan García Garland}
+\title{Resolution of Exercises - Nominal Techniques - 2019}
+\date{}
 \newcommand\fresh[2]{
   \relax
   \ifmmode
@@ -42,8 +47,8 @@
 \newcommand\abs[2]{\mathize{[#1] #2}}
 \newcommand\lam[2]{\lambda\abs{#1}{#2}}
 
-\newcommand\labstw{\RL{abs2}}
-\newcommand\lfsym{\RL{func sym}}
+\newcommand\labstw{\text{\tiny $\approx$-abs2}}
+\newcommand\lfsym{\text{\tiny $\approx$-func sym}}
 
 
 \newcommand\LHS{\textrm{LHS}}
@@ -54,51 +59,61 @@
            \newcommand{\simpl}[1]
                       {\left|#1\right|}
 
+
+\newcommand\assumption[1]{\AXC{}\doubleLine\UIC{#1}}
 \begin{document}
 
 \EnableBpAbbreviations
 
+\maketitle
 
+\section*{Exercise 1}
 
-\section*{Problem 1}
-
-\begin{multicols*}{2}
-\subsection*{a)}
-
- \begin{prooftree}
-  \AXC{\fresh{x}{y}}
-  \AXC{\eqa{x}{x}}
+\begin{multicols}{2}
+\subsection*{a)} Valid.
+\begin{prooftree}
+  \AXC{}
+  \RightLabel{\tiny \#atom}
+  \UIC{\fresh{x}{y}}
+  \AXC{}
+  \RightLabel{\tiny $\approx$-atom}
+  \UIC{\eqa{x}{x}}
+  \RightLabel{$\equiv$}
   \UIC{\eqa{x}{(x \: y) \cdot y}}
+  \RightLabel{$\labstw$}
   \BIC{\eqa{\abs{x}{x}}{\abs{y}{y}}}
+  \RightLabel{$\lfsym$}
   \UIC{\eqa{\lam{x}{x}}
           {\lam{y}{y}}}
 \end{prooftree}
 
-\subsection*{b)}
+Note that in the application of the $\equiv$ ``rule'' there is no
+actual rule applied. A permutation applied to a ground term is
+syntactically equal to the result, there is no suspention here
+(obviously, since there are no variables). Sometimes we will use this
+extra step to make the applied permutation explicit, for clarity. We
+named inference rules according to \cite{URBAN2004473}. We omit names
+from now on since the system is syntax directed.
+
+\subsection*{b)} Valid.
 
 \begin{prooftree}
   \AXC{}
   \UIC{\fresh{x}{\abs{x}{y}}}
   \UIC{\fresh{x}{\lam{x}{y}}}
-  \AXC{$\cdots$}
-  \UIC{\eqa{{\lam{y}{x}}}{{\lam{y}{x}}}}
-  \RightLabel{$\equiv$}
+  \AXC{}
+  \UIC{\eqa{{x}}{{x}}}
+  \UIC{\eqa{\abs{y}{x}}{\abs{y}{x}}}
+  \UIC{\eqa{{\lam{y}{x}}}{{\lam{y}{x}}}}\RightLabel{$\equiv$}
   \UIC{\eqa{{\lam{y}{x}}}{(x\: y) \cdot {\lam{x}{y}}}}
-  \labstw
+  %\labstw
   \BIC{\eqa{\abs{x}{\lam{y}{x}}}{\abs{y}{\lam{x}{y}}}}
-  \lfsym
+  %\lfsym
   \UIC{\eqa{\lam{x}{\lam{y}{x}}}{\lam{y}{\lam{x}{y}}}}
 \end{prooftree}
 
-The incomplete branch here is trivial since both terms are sintactical
-equivalent. They can be decomposed constructor by constructor. Note
-that in the $\equiv$ ``rule'' there is no actual rule applied. A
-permutation applied to a ground term is actually sintactically equal
-to the result, there is no suspention here. We adopt this syntax to
-make the applied permutation explicit, for clarity.
 
-\subsection*{c)}
-\subsection*{d)}
+\subsection*{c)} Not valid.
 
 \begin{prooftree}
   \AXC{?}
@@ -109,11 +124,19 @@ make the applied permutation explicit, for clarity.
   \UIC{\eqa{\lam{x}{X}}{\lam{y}{Y}}}
 \end{prooftree}
 
-\subsection*{e)}
+We are stuck. Open branches cannot be closed. Recall that the
+deduction system is syntax directed. This implies that this situation
+can only occur in a non valid judgement. Otherwise we could end in
+open branches due to bad decisions when making the proof.
 
+\vfill
+
+\subsection*{d)}Not valid.
 \begin{prooftree}
-  \AXC{\fresh{x}{X}}
-  \AXC{\fresh{x}{X}}
+  \AXC{?}
+  \UIC{\fresh{x}{Y}}
+  \AXC{?}
+  \UIC{\fresh{x}{X}}
   \AXC{?}
   \UIC{\fresh{y}{X}}
   \BIC{\eqa{X}{(x\: y) \cdot X}}
@@ -121,11 +144,36 @@ make the applied permutation explicit, for clarity.
   \UIC{\eqa{\lam{x}{X}}{\lam{y}{X}}}
 \end{prooftree}
 
-\subsection*{f)}
+
+\subsection*{e)} Not Valid.
+
 \begin{prooftree}
-  \AXC{\fresh{x}{s(X)}}
-  \AXC{\fresh{x}{X}}
+  \AXC{}\doubleLine
+  \UIC{\fresh{x}{X}}
+  \doubleLine
   \AXC{}
+  \UIC{\fresh{x}{X}}
+  \AXC{?}
+  \UIC{\fresh{y}{X}}
+  \BIC{\eqa{X}{(x\: y) \cdot X}}
+  \BIC{\eqa{\abs{x}{X}}{\abs{y}{X}}}
+  \UIC{\eqa{\lam{x}{X}}{\lam{y}{X}}}
+\end{prooftree}
+
+We use a double line when a branch is closed by an assumption from the
+set of hypothesis. In this case $\fresh{y}{X}$ cannot be proved and we
+are stuck. But leaves with $\fresh{x}{X}$ were closed.
+
+
+\subsection*{f)} Valid.
+\begin{prooftree}
+  \AXC{}\doubleLine
+  \UIC{\fresh{x}{X}}
+  \UIC{\fresh{x}{s(X)}}
+  \AXC{}\doubleLine
+  \UIC{\fresh{x}{X}}
+  \AXC{}
+  \doubleLine
   \UIC{\fresh{y}{X}}
   \BIC{\eqa{X}{(x\: y) \cdot X}}
   \UIC{\eqa{s(X)}{s((x\: y) \cdot X)}}
@@ -135,47 +183,105 @@ make the applied permutation explicit, for clarity.
 \end{prooftree}
 
 
-\end{multicols*}
+\subsection*{g)}
+Not valid.
+
+\begin{prooftree}
+  \assumption{\fresh{x}{X}}
+  \AXC{?}
+  \UIC{\fresh{y}{Y}}
+  \UIC{\fresh{x}{(x \: y) \cdot Y}}
+  \BIC{\fresh{x}{(X, (x \: y) \cdot Y)}}
+  \UIC{\fresh{x}{+\!\!(X, (x \: y) \cdot Y)}}
+  \AXC{ \vdots }
+  \BIC{\eqa
+    {\lam{x}{+\!\!(X,Y)}}
+    {\lam{y}{+\!\!(X, (x \: y) \cdot Y)}}
+  }
+\end{prooftree}
+
+Here we omit the right branch of the proof. The invalidity of the
+judgement arises from the freshness requirement $\fresh{y}{Y}$.
+ 
+\end{multicols}
+
+\newpage
+\subsection*{h)}
+Valid.
+
+\begin{prooftree}
+  \assumption{\fresh{x}{X}}
+  \AXC{}
+  \UIC{\fresh{x}{y}}
+  \UIC{\fresh{x}{\abs{y}{y}}}
+  \UIC{\fresh{x}{\lam{y}{y}}}
+  \BIC{\fresh{x}{(X,\abs{y}{y})}}
+  \UIC{\fresh{x}{app(X,\abs{y}{y})}}
+  \assumption{\fresh{x}{X}}
+  \assumption{\fresh{y}{X}}
+  \BIC{\eqa{X}{(x \: y) \cdot X}}
+  \AXC{}
+  \UIC{\eqa{y}{y}}
+  \UIC{\eqa{\abs{y}{y}}{\abs{y}{y}}}
+  \UIC{\eqa{\lam{y}{y}}{\lam{y}{y}}}
+  \BIC{\eqa{(X,\lam{y}{y})}{((x \: y) \cdot X, \lam{y}{y})}}
+  \UIC{\eqa{app(X,\lam{y}{y})}{app ((x \: y) \cdot X, \lam{y}{y})}}
+  \RightLabel{$\equiv$}
+  \UIC{\eqa{app(X,\lam{y}{y})}{(x \: y) \cdot app (X, \lam{y}{y})}}
+  \BIC{\eqa
+    {\abs{x}{app(X, \lam{y}{y})}}
+    {\abs{y}{app(X, \lam{y}{y})}}
+  }
+  \UIC{\eqa
+    {\lam{x}{app(X, \lam{y}{y})}}
+    {\lam{y}{app(X, \lam{y}{y})}}
+  }
+\end{prooftree}
+
+
+Again we used an $\equiv$ step for clarity.  $(x \: y) \cdot app (X,
+\lam{y}{y})}$ is NOT a nominal term, the expression is
+  syntactically equal to $app ((x \: y) \cdot X, \lam{y}{y})}$.
 
 
 \newpage
 
-\section*{Excercise 3}
+\section*{Exercise 2}
 
 This is a nontrivial proof of temination since the (\algRel) relation
-is not defined inductively. {TODO: REF PAPERS }
-
-A common tool for proving the termination of programs (or, of course
-rewriting systems) is to find an strictly decreasing termination
-function that maps the state of the program into some
-\emph{well-founded} set. For this excercise we use multiset orderings.
-A nice introductory paper like \cite{DBLP:conf/icalp/DershowitzM79}.
+is not defined inductively. A common tool for proving the termination
+of programs (or, of course rewriting systems) is to find a strictly
+decreasing termination function that maps the state of the program
+into some \emph{well-founded} set. For this exercise we use multiset
+orderings. Actually I did not know about multiset orderings before,
+and I only had done simple proofs of non inductive termination.
+I read \cite{DBLP:conf/icalp/DershowitzM79} to solve this exercise.
 
 The idea is that given a base order ($\prec$) over a set $A$, we
 define an order $\prec_{\mathscr{P}}$ over finite multisets of $A$
 where $A \prec_{\mathscr{P}} B$ if and only if we can get $A$ from $B$
 substituting zero or more elements, each by a finite set of smaller
-elements (according to $\prec$).  It is well known, and easy to prove
+elements (according to $\prec$).  It is well known and easy to prove
 (details in \cite{DBLP:conf/icalp/DershowitzM79}) that
 ($\prec_{\mathscr{P}}$) is a well-founded order whenever ($\prec$) is
 a well-founded order.
 
 For the (\algRel) relation we have a total of 12 rules (six rewriting
-freshness relations, as many rewriting $\alpha$equivalence
-predicates). Lets name them as: \hfill\break $\#_1, \#_2, \#_3, \#_4,
+freshness relations, as many rewriting $\alpha$-equivalence
+predicates). Let us name them as: $\#_1, \#_2, \#_3, \#_4,
 \#_5, \#_6,\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5,
 \alpha_6$. When a rule is of the form $Pr \Rightarrow Pr'$ we refer
-$Pr$ and $Pr'$ as LHS and RHS.
+$Pr$ and $Pr'$ as LHS and RHS, respectively.
 
 If we define some notion of size ($sz$) for $\fresh{a}{t}$ and
 $\eqa{t}{u}$ and then:
 
-$$size(Pr) = \bigcup_{p \in Pr} sz(p) $$
+$$size(Pr) = \biguplus_{p \in Pr} sz(p) $$
 
 \noindent
 It is clear that for $\#1$, $\#5$, and $\alpha_1$, $size$ is
 decreasing from LHS to RHS since $size (\LHS) \subset size(\RHS)$, and
-if $A \subseteq B$ then $A \prec_{\mathsc{P}} B$ in the multiset
+if $A \subseteq B$ then $A \prec_{\mathscr{P}} B$ in the multiset
 ordering.
 
 For most of the other rules $size$ is also decreasing if $sz$ is
@@ -183,11 +289,11 @@ monotone with respect to the structure of the terms used in the
 predicates. But note that ($\#_6$) requires $sz(\fresh{a}{\pi \cdot
   X}) > sz(\fresh{a}{id \cdot X})$ (when $\pi \neq id$) and in the
 other hand ($\alpha_5$) introduces a permutation, generating possibly
-many suspentions, which means that it is not clear that
-$size(\eqa{\abs{b}{l}}{\abs{a}{s}}) > size(\eqa{(a \: b) \cdot
-  l}{s})$. Also, rules ($\alpha_5$) and ($\alpha_6$) suggest that it
-is a good idea to consider equivalence conditions ``bigger'' than
-freshness conditions.
+many suspensions, which means that it is not clear that
+$sz(\eqa{\abs{b}{l}}{\abs{a}{s}}) > sz(\eqa{(a \: b) \cdot l}{s})$ if
+we take a naive approach. Also, rules ($\alpha_5$) and ($\alpha_6$)
+suggest that it is a good idea to consider equivalence conditions
+``bigger'' than freshness conditions.
 
 Taking all this into account, the following $sz$ function is
 proposed:
@@ -200,11 +306,349 @@ proposed:
 where:
 
 \begin{align*}
-  
+  \doubl{a}      &= 1\\
+  \doubl{\abs{a}{t}} &= 1 + \doubl{t}\\
+  \doubl{f t} &= 1 + \doubl{t}\\
+  \doubl{(t_1, \cdots t_n)} &= \sum_{i=1}^{n} \doubl{t_i} + 1\\
+  \doubl{id \cdot X} &= 1\\
+  \doubl{\pi \cdot X} &= 2 \: (\text{whenever} \: \pi \neq id) 
 \end{align*}
 
+and:
 
-\bibliographystyle{alpha}
-\bibliography{bib}
+\begin{align*}
+  \simpl{\eqa{t}{u}} &= \simpl{t} + \simpl{u}\\
+  \simpl{a}      &= 1\\
+  \simpl{\abs{a}{t}} &= 1 + \simpl{t}\\
+  \simpl{f t} &= 1 + \simpl{t}\\
+  \simpl{(t_1, \cdots t_n)} &= \sum_{i=1}^{n} \simpl{t_i} + 1\\
+  \simpl{\pi \cdot X} &= 1
+\end{align*}
+
+With this definition, note that the codomain of $sz$ is $(\{1,2\},
+\mathbb{N})$, and it is well founded considering the lexicodraphic
+order.
+
+Now, we prove that $size$ is decreasing, justifying in each case what
+happens from $zise(\LHS)$ to $size(\RHS)$
+
+In ($\#_1$, $\#_5$, $\alpha_1$), as pointed before, we erase one
+element. In ($\#_2$, $\#_4$) we erase a term of size $(1,n)$ and put a
+term of size $(1,n-1)$, that is, smaller. The case ($\#_6$) is
+similar, works thanks to our definition. Analogously for ($\alpha_3$,
+$\alpha_4$) we erase an element of size $(2,n)$ to put something of
+size $(2,n-2)$.  In ($\#_3$) we erase something of size $(1,n)$ to put
+a finite set of elements of the form $(1,k)$ with $k<n$. Again we get
+a smaller multiset. For ($\alpha_2$) we can reason the same way.  In
+($\alpha_5$) we erase a term of size $(2,k)$ and put two terms of
+smaller size: $(2,k-2)$ and $(1,l)$. Note that this is true since
+permiutations does not change size of terms since $\simpl{\pi \cdot X}
+= 1$ independendly of $\pi$.  Finally in ($\alpha_6$) we erase an
+element of size $(2,n)$ to put a finite set of elements of size
+$(1,\_)$, getting a smaller multiset.
+
+
+Finally we conclude. The function proposed is strictly decreasing at
+each step. It is defined over a well founded set, wich proves
+termination.
+
+
+\newpage
+\section*{Exercise 3}
+
+\begin{multicols}{2}
+\subsection*{a)}
+
+\begin{prooftree}
+  \AXC{$(\lam{x}{s(X)}) \: Y$}\RightLabel{$\beta$}
+  \UIC{$s(x) [x \mapsto y] $}\RightLabel{$\sigma_{s}$}
+  \UIC{$s ( x [ x \mapsto y])$}\RightLabel{$\sigma_{x}$}
+  \UIC{$s(Y)$}
+\end{prooftree}
+
+\subsection*{b)}
+\begin{prooftree}
+  \AXC{$\fresh{y}{Y}$}
+  \AXC{$(\lam{x}{\lam{y}{x}}) Y$}\RightLabel{$\beta$}
+  \UIC{$(\lam{y}{x}) [x \mapsto Y]$}
+  \RightLabel{$\sigma_\lambda$}
+  \BIC{$\lam{y} ({x} [x \mapsto Y])$}
+  \RightLabel{$\sigma_x$}
+  \UIC{$\lam{y} Y$}
+\end{prooftree}
+
+\subsection*{c)}
+\begin{prooftree}
+  \AXC{\fresh{y}{X}}
+  \AXC{$(\lam{x}{X})Y$}\RightLabel{$\beta$}
+  \UIC{$X [y \mapsto Y]$}\RightLabel{$\sigma_\epsilon$}
+  \BIC{$X$}
+\end{prooftree}
+
+
+\subsection*{d)}
+\begin{prooftree}
+  \AXC{$\fresh{y}{Y}$}
+  \AXC{$\fresh{y}{Y}$}
+  \AXC{$((\lam{x}{\lam{y}{x}}) \: Y ) \: Y$}\RightLabel{$\beta$}
+  \UIC{$((\lam{y}{x}) [x \mapsto Y]) \: Y$}\RightLabel{$\sigma_\lambda$}
+  \BIC{$(\lam{y}{(x[x \mapsto Y]})) \: Y$}\RightLabel{$\sigma_x$}
+  \UIC{$(\lam{y}{Y})\: Y$}\RightLabel{$\beta$}
+  \UIC{$ Y [y \mapsto Y]$}\RightLabel{$\sigma_\epsilon$}
+  \BIC{$Y$}
+\end{prooftree}
+
+\end{multicols}
+
+
+\newpage
+\section*{Exercise 4}
+
+To prove that a judgement is valid we must derive a quasi-typing. Then
+we check that the linearity (compatibility) property holds.
+
+\newcommand\tj[5]{#1 \Vvdash_{#2} #3 \vdash #4 \: : \: #5 }
+\newcommand\tjc[5]{#1 \Vdash_{#2} #3 \vdash #4 \: : \: #5 }
+
+\subsection*{a)}
+
+\newcommand\gam{\{ a : \alpha, X : \beta \}}
+
+\begin{prooftree}
+  \AXC{$\gam_a \equiv \alpha $}\RightLabel{atm}
+  \UIC{$\tj{\gam}{ \emptyset }{\emptyset}{a}{\alpha}$}
+  \AXC{$\gam_X \equiv X $}\RightLabel{var}
+  \UIC{$\tj{\gam}{ \emptyset }{\emptyset}{X}{\beta}$}
+  \RightLabel{tpl}
+  \BIC{$\tj{\gam}{ \emptyset }{\emptyset}
+    {(a,X)}{\alpha \times \beta}$}
+\end{prooftree}
+
+\noindent
+Compatibility  property  holds  since  there is  only  one  essential
+enviroment in discussion (one occurence of $X$).
+Then
+$\tjc{\gam}{ \emptyset }{\emptyset}
+    {(a,X)}{\alpha \times \beta}$
+
+\subsection*{b)}
+
+\begin{prooftree}
+  \AXC{}\RightLabel{atm}
+  \UIC{$\tj{a : \alpha }{\emptyset}{\emptyset}{a}{\alpha}$}\RightLabel{abs}
+  \UIC{$\tj{\emptyset}{\emptyset}{\emptyset}{[a]a}{[\alpha]\alpha}$}
+\end{prooftree}
+
+\noindent
+Here, and from now on we use a more lightweight notation, avoiding the
+brackets and the inmediate check on (atm) rules. No variables ever
+occur, meaning that the compatibility property holds trivially.
+
+\noindent
+We conclude $\tjc{\emptyset}{\emptyset}{\emptyset}{[a]a}{[\alpha]\alpha}$.
+
+\subsection*{c)}
+\begin{prooftree}
+  \AXC{}\RightLabel{atm}
+  \UIC{$\tj{a : \alpha}{\emptyset}{\emptyset}{a}{\alpha}$}
+  \RightLabel{abs}
+  \UIC{$\tj{a : \beta}{\emptyset}{\emptyset}{[a]a}{[\alpha]\alpha}$}
+\end{prooftree}
+
+\noindent
+Here note that $\{ a : \beta \} \bowtie \{ a : \alpha \} = \{ a :
+\alpha \}$.  Again the compatibility property holds trivially.
+
+\subsection*{d)}
+
+\newcommand\es{\emptyset}
+\newcommand\perm[2]{(#1) \cdot #2}
+
+\begin{prooftree}
+  \AXC{}\RightLabel{atm} \UIC{$\tj{a : \tau_1, b : \tau_2, X :
+      \tau}{\emptyset}{\emptyset}{(a \: b) \cdot X}{\tau} $}
+\end{prooftree}
+
+\noindent
+Again the compatibility property is trivial since the variable $X$
+occurs only once.  This is (counterintuitively, at least) true even
+when atoms $a$ and $b$ have different types.
+
+
+\subsection*{e)}
+\label{sec:e}
+
+\begin{prooftree}
+  \AXC{}\RightLabel{atm}
+  \UIC{$\tj{\Gamma_1 \equiv a : \tau_1, b : \tau_1, X : \tau}
+    {\es}{\es}{\perm{a \: b}{X}}{\tau}$}
+  \AXC{}\RightLabel{atm}
+  \UIC{$\tj{\Gamma_2 \equiv a : \tau_1, b : \tau_1, X : \tau}
+    {\es}{\es}{id \cdot X}{\tau}$}\RightLabel{tpl}
+  \BIC{$\tj{a : \tau_1, b : \tau_1, X : \tau}
+    {\es}{\es}{(\perm{a \: b}{X}, id \cdot X)}{\tau \times \tau}$}
+\end{prooftree}
+
+\noindent
+The compatibility property holds if $\Gamma_1^{(a \: b)^{-1}} \equiv
+\Gamma_2$ (recall that $\Sigma \equiv \es$, so we ignore it) which
+holds since $a$ and $b$ have both type $\tau_1$.  Then $\tjc{a :
+  \tau_1, b : \tau_1, X : \tau} {\es}{\es}{(\perm{a \: b}{X}, id \cdot
+  X)}{\tau \times \tau}$.  Note that if the case were similar to the
+previous one, where $a$ and $b$ have different types then the
+essential environments would be different, meaning that the
+quasi-typing is not enough to show the validity of the judgement.
+
+
+\subsection*{f)}
+
+In this case, let us develop a piece of the quasi-typing derivation, the
+branch marked with ``?'' is not yet closed:
+
+\begin{prooftree}
+  \AXC{?}
+  \UIC{$\tj{X :
+      \tau}{\es}{\fresh{a}{X}}{[a] id \cdot X}{\tau}$}
+  \AXC{}
+  \RightLabel{var}
+  \UIC{$\tj{X :
+      \tau}{\es}{\fresh{a}{X}}{id \cdot X}{\tau}$}
+  \RightLabel{tpl}
+  \BIC{$\tj{X :
+      \tau}{\es}{\fresh{a}{X}}{(\abs{a}{id \cdot X},id \cdot X)}
+    {(\tau\times\tau)}$}
+\end{prooftree}
+
+We are stuck here, since the type of $[a] id \cdot X$ must be an
+abstraction to follow up the proof development.  If the quasi-typing
+is not derivable then the judgement cannot be valid. As it is
+presented in the slides (``show that each of these typing judgements
+is valid'') it is assumed that all judgements are valid.  In
+\cite{Fairweather:2018:TNR:3176362.3161558} this is also an example
+of a valid judgement. Perhaps there is a typo?
+
+Assuming that the type of $([a]id \cdot X, id \cdot X)$ is something
+like $([\gamma]\tau\times\tau)$ then we have two (var) rules proving
+$id \cdot X : \tau$ with different typing contexts (one with
+information about $a$, and one without). Since $\fresh{a}{X}$ is an
+assumption in the freshness context we do not care about $a$ and both
+occurrences of $X$ are typed in the same essential environment.
+
+
+\subsection*{g)}
+
+
+\begin{prooftree}
+  \AXC{}
+  \RightLabel{var}
+  \UIC{$\tj{a : \beta, b : \beta, X : \tau}{\es}{\es}{(a \:
+      b) \cdot X}{\tau}$}
+  \AXC{}
+  \RightLabel{var}
+  \UIC{$\tj{a : \beta, b : \beta, X :
+      \tau}{\es}{\es}{id \cdot X}{\tau}$}
+  \RightLabel{tpl}
+  \BIC{$\tj{a : \beta, b :
+      \beta, X : \tau}{\es}{\es}{((a \: b) \cdot X, id \cdot
+      X)}{\tau\times\tau}$}\RightLabel{abs} \UIC{$\tj{a : \alpha, b :
+      \beta, X : \tau}{\es}{\es}{[a]((a \: b) \cdot X, id \cdot
+      X)}{[\beta]\tau\times\tau}$}
+\end{prooftree}
+
+\noindent
+Like in (e) both occurrences of $X$ are typed in the same essential
+environment because $a$ and $b$ have the same type. This is true
+because after applying the (abs) rule (reading bottom-up) the typing
+context is updated.
+
+
+\newpage
+\section*{Exercise 5}
+They are not all typeable closed. Let us look at the fourth and last
+rule.  If $sub([a](lam[b]X),Z) : \alpha' \Rightarrow\alpha$ then since
+$sub : \forall(\alpha,\beta)\langle([\alpha]\beta\times\alpha)
+\hookrightarrow \beta\rangle$ to get the right type it must be
+instanced with $\beta := \alpha' \Rightarrow\alpha$. To see it
+clearer:
+
+{\small
+\begin{prooftree}
+  \AXC{$\forall(\alpha,\beta)\langle([\alpha]\beta\times\alpha)
+    \hookrightarrow \beta \rangle \succcurlyeq \langle
+    ([\gamma](\alpha' \Rightarrow \alpha)\times \gamma)\hookrightarrow
+    \alpha' \Rightarrow \alpha \rangle $} \AXC{$\vdots$}
+  \UIC{$\tj{X:\alpha, Z:\gamma}{\Sigma}{\fresh{b}{Z}}{([a](lam[b]X),Z)
+    }{ ([\gamma](\alpha' \Rightarrow \alpha)\times \gamma)}$} \BIC{$\tj{X:\alpha,
+      Z:\gamma}{\Sigma}{\fresh{b}{Z}}{sub([a](lam[b]X),Z) }{ \alpha'
+      \Rightarrow\alpha}$}
+\end{prooftree}
+}
+
+\noindent
+This violates the condition (c).
+
+\newpage
+\section*{Exercise 6}
+
+\newcommand\sol[2]{\langle #1, #2 \rangle}
+\newcommand\eqq{\overset{\curlywedge}{\approx}_\alpha}
+
+Recall that a solution for $Pr$ is a pair $\sol{\Phi}{\sigma}$ such that
+\begin{enumerate}
+  \item $\Phi \vdash \pi \curlywedge t \sigma$ for all
+    $\pi\curlywedge^{?} t \in Pr$
+  \item
+    $\Phi \vdash s\sigma \eqq t \sigma$ for all
+    $s \eqq^{?} t \in Pr$
+  \item
+    $X \sigma = X \sigma\sigma$ for $X \in \textt{\mathtt{Var}(Pr)}$
+\end{enumerate}
+
+This was taken from \cite{DBLP:conf/rta/Ayala-RinconFN18}. (I think
+that this information was not part of the slides)
+
+Now, to prove that simplification rules preserves results we analize
+each case. Most of them are similar, a couple of cases are proved in
+\cite{DBLP:conf/rta/Ayala-RinconFN18} with no equational theories. For
+this case they are similar. The new cases are the ones involving $+$,
+and can be studied the same way (for one inclusion applying a rule,
+for the other an inversion lemma).
+
+For instance, for the case $Pr \uplus \{ \pi \curlywedge^{?} +(s,t) \}
+\Rightarrow Pr \uplus \{ \pi \cdot s \eqq s, \pi \cdot t \eqq t\}$ if
+$\sol{\Phi}{\sigma}$ is a solution of $Pr \uplus \{ \pi
+\curlywedge^{?} +(s,t) \}$ in particular conditions 1,2 are trivially
+satisfied for all constraints in $Pr$ (and 3, of course). We also know
+that $\Phi \vdash \pi \curlywedge +(s,t)\sigma$ meaning that
+$\Phi \vdash \pi \curlywedge +(s\sigma,t\sigma)$. From the rule:
+
+
+\begin{prooftree}
+  \AXC{$\Phi \vdash \pi \cdot t_0 \approx t_0$}
+  \AXC{$\Phi \vdash \pi \cdot t_1 \approx t_1$}
+  \BIC{$\Phi \vdash \pi \curlywedge +(t_0, t_1)$}
+\end{prooftree}
+
+applied with $t_0 = s$, $t_1 = t$ and inversion we get exactly that
+$\Phi \vdash \pi \cdot s\sigma \approx s\sigma$ and $\Phi \vdash \pi
+\cdot t\sigma \approx t\sigma$, then $\sol{\Phi}{\sigma}$ is solution of
+$Pr \uplus \{ \pi \cdot s \eqq s, \pi \cdot t \eqq t\}$.
+The other inclusion is similar applying the rule forwards.
+
+For $Pr \uplus \{ \pi \curlywedge^{?} +(s,t) \}
+\Rightarrow Pr \uplus \{ \pi \cdot s \eqq t, \pi \cdot t \eqq s\}$
+we reason the same way using the rule:
+
+\begin{prooftree}
+  \AXC{$\Phi \vdash \pi \cdot t_0 \approx t_1$}
+  \AXC{$\Phi \vdash \pi \cdot t_1 \approx t_0$}
+  \BIC{$\Phi \vdash \pi \curlywedge +(t_0, t_1)$}
+\end{prooftree}
+
+For the two cases with $\alpha$-equalities we also reason the same way
+using the rules for $\alpha$-equality.
+
+\newpage
+\bibliographystyle{alpha} \bibliography{bib}
 
 \end{document}
